@@ -1,9 +1,11 @@
 package com.example._kfc.person.services;
 
 import com.example._kfc.person.api.dtos.PersonDto;
-import com.example._kfc.person.domain.entities.entities.PeopleRecord;
-import com.example._kfc.person.mappers.PersonMapper;
+import com.example._kfc.person.domain.PeopleRecord;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PersonService {
@@ -15,19 +17,24 @@ public class PersonService {
     }
 
     /**
-     * Add a new person to the registry
+     * Add a new person to the registry or update an existing one
      *
      * @param dto person to add or update
      * @return true if the 3kfc check is passing with the current people, else false
      */
-    public boolean AddPerson(PersonDto dto) {
-        var person = PersonMapper.FromDto(dto);
+    public boolean UpsertPerson(PersonDto dto) {
+        var person = record.GetOrCreate(dto.id());
 
-        var oldEntry = record.GetPerson(person.id());
-        record.AddPerson(person);
-        // TODO add / update  family members
+        // TODO remove existing relations
+
+        person.setName(dto.name());
+        person.setPartnerId(dto.partner().id());
+        person.setBirthDate(java.time.LocalDate.parse(dto.birthDate()));
+        person.setParentIds(Set.of(dto.parent1().id(), dto.parent2().id()));
+        person.setChildrenIds(dto.children().stream().map(PersonDto.RelatedPersonDto::id).collect(Collectors.toSet()));
 
         // TODO map to response DTO instead of boolean
         return !personValidatorService.GetValidPeople(record).isEmpty();
     }
+
 }

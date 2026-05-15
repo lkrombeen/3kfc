@@ -1,6 +1,6 @@
 package com.example._kfc.person;
 
-import com.example._kfc.person.domain.valueobjects.Person;
+import com.example._kfc.person.domain.Person;
 import com.example._kfc.person.api.dtos.PersonDto;
 import com.example._kfc.person.services.PersonService;
 import com.example._kfc.person.services.PersonValidatorService;
@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +37,7 @@ class PersonServiceTest {
 
         when(personValidatorService.GetValidPeople(Mockito.any())).thenReturn(new HashSet<>());
 
-        var actual = service.AddPerson(Han);
+        var actual = service.UpsertPerson(Han);
 
         assertFalse(actual);
     }
@@ -46,10 +47,10 @@ class PersonServiceTest {
         var service = new PersonService(personValidatorService);
 
         when(personValidatorService.GetValidPeople(Mockito.any())).thenReturn(Set.of(
-                new Person(1, "name", "birthday", 2, 3, 4, Set.of())
+                new Person(1L, "name", LocalDate.now(), 4L, Set.of(2L, 3L), Set.of())
         ));
 
-        var actual = service.AddPerson(Han);
+        var actual = service.UpsertPerson(Han);
 
         assertTrue(actual);
     }

@@ -3,7 +3,7 @@ package com.example._kfc.person.api.dtos;
 import java.util.List;
 
 public record PersonDto(
-        int id,
+        long id,
         String name,
         String birthDate,
         RelatedPersonDto parent1,
@@ -11,6 +11,6 @@ public record PersonDto(
         RelatedPersonDto partner,
         List<RelatedPersonDto> children
 ) {
-    public record RelatedPersonDto(int id) {
+    public record RelatedPersonDto(long id) {
     }
 }
