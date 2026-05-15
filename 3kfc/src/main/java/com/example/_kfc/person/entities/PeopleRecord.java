@@ -2,8 +2,7 @@ package com.example._kfc.person.entities;
 
 import com.example._kfc.person.domain.valueobjects.Person;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class PeopleRecord {
     private final Map<Integer, Person> record = new HashMap<>();
@@ -19,5 +18,9 @@ public class PeopleRecord {
 
     public Person GetPerson(int personId) {
         return record.get(personId);
+    }
+
+    public Set<Person> GetPersons() {
+        return new HashSet<>(record.values());
     }
 }

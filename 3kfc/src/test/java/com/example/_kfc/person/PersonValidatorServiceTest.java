@@ -1,102 +1,56 @@
 package com.example._kfc.person;
 
-import com.example._kfc.person.dtos.PersonDto;
+import com.example._kfc.person.domain.valueobjects.Person;
+import com.example._kfc.person.entities.PeopleRecord;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class PersonValidatorServiceTest {
     @Mock
-    private PersonValidatorService personValidatorService;
+    private DateTimeService dateTimeService;
 
-    private final PersonDto Han = new PersonDto(5, "Han Solo", "1942-07-13",
-            new PersonDto.RelatedPersonDto(1),
-            new PersonDto.RelatedPersonDto(2),
-            new PersonDto.RelatedPersonDto(6),
-            new ArrayList<>());
-    private final PersonDto Leia = new PersonDto(6, "Leia Organa", "1942-07-13",
-            new PersonDto.RelatedPersonDto(3),
-            new PersonDto.RelatedPersonDto(4),
-            new PersonDto.RelatedPersonDto(5),
-            new ArrayList<>());
-    private final PersonDto Ben = new PersonDto(5, "Ben Solo", "1966-01-21",
-            new PersonDto.RelatedPersonDto(5),
-            new PersonDto.RelatedPersonDto(6),
-            new PersonDto.RelatedPersonDto(7),
-            new ArrayList<>());
-    private final PersonDto Jacen = new PersonDto(5, "Jacen Solo", "1967-01-21",
-            new PersonDto.RelatedPersonDto(5),
-            new PersonDto.RelatedPersonDto(6),
-            new PersonDto.RelatedPersonDto(7),
-            new ArrayList<>());
-    private final PersonDto Jaina = new PersonDto(5, "Jaina Solo", "1968-01-21",
-            new PersonDto.RelatedPersonDto(5),
-            new PersonDto.RelatedPersonDto(6),
-            new PersonDto.RelatedPersonDto(7),
-            new ArrayList<>());
-
-    @Test
-    void newPersonReturnsFalse() {
-        var service = new PersonService(personValidatorService);
-
-        var actual = service.AddPerson(Han);
-
-        assertFalse(actual);
-    }
+    private final Person Han = new Person(5, "Han Solo", "1942-07-13",
+            1,
+            2,
+            6,
+            Set.of(7, 8, 9));
+    private final Person Leia = new Person(6, "Leia Organa", "1942-07-13",
+            3,
+            4,
+            6,
+            Set.of(7, 8, 9));
+    private final Person Ben = new Person(7, "Ben Solo", "1966-01-21",
+            5,
+            6,
+            null,
+            new HashSet<Integer>());
+    private final Person Jacen = new Person(8, "Jacen Solo", "1967-01-21",
+            5,
+            6,
+            null,
+            new HashSet<Integer>());
+    private final Person Jaina = new Person(9, "Jaina Solo", "1968-01-21",
+            5,
+            6,
+            null,
+            new HashSet<Integer>());
 
     @Test
-    void newPersonWithPartnerButNoChildrenReturnsFalse() {
-        var service = new PersonService(personValidatorService);
+    void personWithoutPartnerReturnsFalse() {
+        var record = new PeopleRecord();
+        record.AddPerson(Jaina);
+        var service = new PersonValidatorService(dateTimeService);
 
-        service.AddPerson(Han);
-        var actual = service.AddPerson(Leia);
+        var actual = service.GetValidPeople(record);
 
-        assertFalse(actual);
-    }
-
-    @Test
-    void newPersonWithPartnerButNoAdultChildrenReturnsFalse() {
-        var service = new PersonService(personValidatorService);
-
-        service.AddPerson(Han);
-        service.AddPerson(Leia);
-        service.AddPerson(Ben);
-        service.AddPerson(Jacen);
-        var actual = service.AddPerson(Jaina);
-
-        assertFalse(actual);
-    }
-
-    @Test
-    void newPersonWithPartnerButWithAdultChildrenReturnsTrue() {
-        var service = new PersonService(personValidatorService);
-
-        service.AddPerson(Han);
-        service.AddPerson(Leia);
-        service.AddPerson(Ben);
-        service.AddPerson(Jacen);
-        var actual = service.AddPerson(Jaina);
-
-        assertTrue(actual);
-    }
-
-    @Test
-    void orderOfInsertionShouldNotMatterAndStillReturnTrue() {
-        var service = new PersonService(personValidatorService);
-
-        service.AddPerson(Jaina);
-        service.AddPerson(Leia);
-        service.AddPerson(Ben);
-        service.AddPerson(Jacen);
-        var actual = service.AddPerson(Han);
-
-        assertTrue(actual);
+        assertEquals(0, actual.size());
     }
 }

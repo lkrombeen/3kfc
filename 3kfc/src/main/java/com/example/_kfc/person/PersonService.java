@@ -16,15 +16,18 @@ public class PersonService {
 
     /**
      * Add a new person to the registry
+     *
      * @param dto person to add or update
      * @return true if the 3kfc check is passing with the current people, else false
      */
     public boolean AddPerson(PersonDto dto) {
         var person = PersonMapper.FromDto(dto);
+
+        var oldEntry = record.GetPerson(person.id());
         record.AddPerson(person);
+        // TODO add / update  family members
 
-        personValidatorService.validatePerson(person, record);
-
-        return personValidatorService.passes3KFCCheck();
+        // TODO map to response DTO instead of boolean
+        return !personValidatorService.GetValidPeople(record).isEmpty();
     }
 }
