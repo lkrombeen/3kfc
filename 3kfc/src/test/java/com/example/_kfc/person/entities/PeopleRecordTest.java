@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class PersonTest {
+class PeopleRecordTest {
     private final PersonDto Han = new PersonDto(5, "Han Solo", "1942-07-13",
             new PersonDto.RelatedPersonDto(1),
             new PersonDto.RelatedPersonDto(2),
