@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,6 +28,7 @@ class PersonServiceTest {
 
     @Test
     void upsertPersonReturnsMappedDto() {
+        // Act
         var service = new PersonService(validator, mapper);
         var input = new PersonDto(
                 10,
@@ -49,8 +51,10 @@ class PersonServiceTest {
         ArgumentCaptor<Person> personCaptor = ArgumentCaptor.forClass(Person.class);
         when(mapper.toDto(any())).thenReturn(expectedDto);
 
+        // Act
         var result = service.UpsertPerson(input);
 
+        // Assert
         assertEquals(expectedDto, result);
         verify(mapper).toDto(personCaptor.capture());
         var p = personCaptor.getValue();
@@ -64,6 +68,7 @@ class PersonServiceTest {
 
     @Test
     void getValidPeopleReturnsMappedList() {
+        // Arrange
         var service = new PersonService(validator, mapper);
 
         var person = new Person(
@@ -88,12 +93,52 @@ class PersonServiceTest {
         when(validator.GetValidPeople(any())).thenReturn(Set.of(person));
         when(mapper.toDto(person)).thenReturn(dto);
 
+        // Act
         var result = service.GetValidPeople();
 
+        // Assert
         assertEquals(1, result.size());
         assertEquals(dto, result.getFirst());
 
         verify(validator).GetValidPeople(any());
         verify(mapper).toDto(person);
+    }
+
+    @Test
+    void upsertPersonSetsPartnerToNullWhenDtoPartnerIsNull() {
+        // Arrange
+        var service = new PersonService(validator, mapper);
+        var initial = new PersonDto(
+                10,
+                "Luke",
+                "1977-05-25",
+                new PersonDto.RelatedPersonDto(1),
+                new PersonDto.RelatedPersonDto(2),
+                new PersonDto.RelatedPersonDto(20),
+                List.of()
+        );
+        var initialWithoutPartner = new PersonDto(
+                10,
+                "Luke",
+                "1977-05-25",
+                new PersonDto.RelatedPersonDto(1),
+                new PersonDto.RelatedPersonDto(2),
+                null,
+                List.of()
+        );
+
+        when(mapper.toDto(any())).thenReturn(initialWithoutPartner);
+
+        // Act
+        service.UpsertPerson(initial);
+        ArgumentCaptor<Person> captor = ArgumentCaptor.forClass(Person.class);
+        service.UpsertPerson(initialWithoutPartner);
+
+        // Assert
+        verify(mapper, atLeastOnce()).toDto(captor.capture());
+        var p = captor.getValue();
+
+        assertEquals(10, p.getId());
+        assertNull(p.getPartnerId(), "Partner should be overwritten to null");
     }
 }

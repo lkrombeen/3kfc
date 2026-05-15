@@ -48,7 +48,7 @@ public final class PersonService {
     private void setValuesFor(Person person, PersonDto values) {
         person.setName(values.name());
 
-        if (values.partner() != null) person.setPartnerId(values.partner().id());
+        person.setPartnerId(values.partner() == null ? null : values.partner().id());
         person.setBirthDate(java.time.LocalDate.parse(values.birthDate()));
         var parentIds = new HashSet<Long>();
         if (values.parent1() != null) parentIds.add(values.parent1().id());
