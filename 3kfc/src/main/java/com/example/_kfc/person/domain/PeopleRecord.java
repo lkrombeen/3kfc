@@ -57,8 +57,22 @@ public class PeopleRecord {
      * @param person the given person
      */
     public void AddRelationsOf(Person person) {
-        // TODO add partner relation
-        // TODO add child relations
-        // TODO add parent relations
+        // Add id to partner
+        if (person.getPartnerId() != null) {
+            var partner = GetPerson(person.getPartnerId());
+            if (partner != null) partner.setPartnerId(person.getId());
+        }
+
+        // Add id to parents
+        for (var parentId : person.getParentIds()) {
+            var parent = GetPerson(parentId);
+            if (parent != null) parent.getChildrenIds().add(person.getId());
+        }
+
+        // Add id to children
+        for (var childId : person.getChildrenIds()) {
+            var child = GetPerson(childId);
+            if (child != null) child.getParentIds().add(person.getId());
+        }
     }
 }
