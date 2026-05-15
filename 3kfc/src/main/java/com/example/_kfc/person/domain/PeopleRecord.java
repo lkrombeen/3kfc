@@ -59,19 +59,19 @@ public class PeopleRecord {
     public void AddRelationsOf(Person person) {
         // Add id to partner
         if (person.getPartnerId() != null) {
-            var partner = GetPerson(person.getPartnerId());
-            if (partner != null) partner.setPartnerId(person.getId());
+            var partner = GetOrCreate(person.getPartnerId());
+            partner.setPartnerId(person.getId());
         }
 
         // Add id to parents
         for (var parentId : person.getParentIds()) {
-            var parent = GetPerson(parentId);
-            if (parent != null) parent.getChildrenIds().add(person.getId());
+            var parent = GetOrCreate(parentId);
+            parent.getChildrenIds().add(person.getId());
         }
 
         // Add id to children
         for (var childId : person.getChildrenIds()) {
-            var child = GetPerson(childId);
+            var child = GetOrCreate(childId);
             if (child != null) child.getParentIds().add(person.getId());
         }
     }

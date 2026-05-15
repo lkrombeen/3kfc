@@ -14,10 +14,10 @@ public final class PersonMapper {
         return new PersonDto(
                 person.getId(),
                 person.getName(),
-                person.getBirthDate().toString(),
+                person.getBirthDate() == null ? null : person.getBirthDate().toString(),
                 parents.size() > 0 ? new PersonDto.RelatedPersonDto(parents.getFirst()) : null,
                 parents.size() > 1 ? new PersonDto.RelatedPersonDto(parents.get(1)) : null,
-                new PersonDto.RelatedPersonDto(person.getPartnerId()),
+                person.getPartnerId() == null ? null : new PersonDto.RelatedPersonDto(person.getPartnerId()),
                 person.getChildrenIds().stream().map(PersonDto.RelatedPersonDto::new).collect(Collectors.toList())
         );
     }

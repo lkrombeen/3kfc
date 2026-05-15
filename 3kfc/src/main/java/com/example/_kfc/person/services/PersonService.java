@@ -6,8 +6,8 @@ import com.example._kfc.person.domain.Person;
 import com.example._kfc.person.mappers.PersonMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,9 +47,13 @@ public final class PersonService {
 
     private void setValuesFor(Person person, PersonDto values) {
         person.setName(values.name());
-        person.setPartnerId(values.partner().id());
+
+        if (values.partner() != null) person.setPartnerId(values.partner().id());
         person.setBirthDate(java.time.LocalDate.parse(values.birthDate()));
-        person.setParentIds(Set.of(values.parent1().id(), values.parent2().id()));
+        var parentIds = new HashSet<Long>();
+        if (values.parent1() != null) parentIds.add(values.parent1().id());
+        if (values.parent2() != null) parentIds.add(values.parent2().id());
+        person.setParentIds(parentIds);
         person.setChildrenIds(values.children().stream().map(PersonDto.RelatedPersonDto::id).collect(Collectors.toSet()));
     }
 }

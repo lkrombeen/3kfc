@@ -49,6 +49,8 @@ public class PersonValidatorService {
         if (person.getChildrenIds().size() != 3) return false;
 
         var partnerId = person.getPartnerId();
+        if (partnerId == null) return false;
+
         return person.getChildrenIds().stream().map(record::GetPerson).allMatch(c -> c.getParentIds().contains(partnerId));
     }
 
@@ -72,6 +74,7 @@ public class PersonValidatorService {
      */
     public boolean isUnder18(Person person) {
         var date = person.getBirthDate();
+        if (date == null) return false;
         var eighteenYearsAgo = dateTimeService.Now().minusYears(18);
         return date.isAfter(eighteenYearsAgo);
     }
