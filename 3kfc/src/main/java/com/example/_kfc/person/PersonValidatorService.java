@@ -23,6 +23,7 @@ public class PersonValidatorService {
     public Set<Person> GetValidPeople(PeopleRecord record) {
         return record.GetPersons().stream()
                 .filter(this::hasPartner)
+                .filter(person -> hasThreeChildrenWithCorrectParents(person, record))
                 .collect(Collectors.toSet());
     }
 
@@ -33,5 +34,12 @@ public class PersonValidatorService {
      */
     private boolean hasPartner(Person person) {
         return person.partnerId() != null;
+    }
+
+    private boolean hasThreeChildrenWithCorrectParents(Person person, PeopleRecord record) {
+        if (person.childrenIds().size() != 3) return false;
+
+        var partnerId = person.partnerId();
+        return person.childrenIds().stream().map(record::GetPerson).allMatch(c -> c.parent1Id() == partnerId || c.parent2Id() == partnerId);
     }
 }
