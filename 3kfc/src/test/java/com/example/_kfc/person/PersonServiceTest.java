@@ -1,7 +1,9 @@
 package com.example._kfc.person;
 
 import com.example._kfc.person.domain.valueobjects.Person;
-import com.example._kfc.person.dtos.PersonDto;
+import com.example._kfc.person.api.dtos.PersonDto;
+import com.example._kfc.person.services.PersonService;
+import com.example._kfc.person.services.PersonValidatorService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

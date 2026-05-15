@@ -1,7 +1,7 @@
-package com.example._kfc.person;
+package com.example._kfc.person.services;
 
-import com.example._kfc.person.dtos.PersonDto;
-import com.example._kfc.person.entities.PeopleRecord;
+import com.example._kfc.person.api.dtos.PersonDto;
+import com.example._kfc.person.domain.entities.entities.PeopleRecord;
 import com.example._kfc.person.mappers.PersonMapper;
 import org.springframework.stereotype.Service;
 

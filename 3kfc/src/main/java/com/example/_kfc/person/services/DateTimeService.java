@@ -1,4 +1,4 @@
-package com.example._kfc.person;
+package com.example._kfc.person.services;
 
 import org.springframework.stereotype.Component;
 

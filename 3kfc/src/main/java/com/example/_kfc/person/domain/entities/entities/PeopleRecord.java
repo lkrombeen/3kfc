@@ -1,4 +1,4 @@
-package com.example._kfc.person.entities;
+package com.example._kfc.person.domain.entities.entities;
 
 import com.example._kfc.person.domain.valueobjects.Person;
 

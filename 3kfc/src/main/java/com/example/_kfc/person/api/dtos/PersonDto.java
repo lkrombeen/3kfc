@@ -1,4 +1,4 @@
-package com.example._kfc.person.dtos;
+package com.example._kfc.person.api.dtos;
 
 import java.util.List;
 

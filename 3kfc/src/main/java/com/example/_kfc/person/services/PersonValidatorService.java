@@ -1,7 +1,7 @@
-package com.example._kfc.person;
+package com.example._kfc.person.services;
 
 import com.example._kfc.person.domain.valueobjects.Person;
-import com.example._kfc.person.entities.PeopleRecord;
+import com.example._kfc.person.domain.entities.entities.PeopleRecord;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -63,6 +63,11 @@ public class PersonValidatorService {
                 .anyMatch(this::isUnder18);
     }
 
+    /**
+     * Check if a person is under 18.
+     * @param person person to check
+     * @return true if the person is 17 or younger, else false
+     */
     public boolean isUnder18(Person person) {
         var date = java.time.LocalDate.parse(person.birthDate());
         var eighteenYearsAgo = dateTimeService.Now().minusYears(18);

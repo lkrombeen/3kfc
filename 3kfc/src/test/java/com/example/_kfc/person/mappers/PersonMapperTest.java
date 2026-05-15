@@ -1,6 +1,6 @@
 package com.example._kfc.person.mappers;
 
-import com.example._kfc.person.dtos.PersonDto;
+import com.example._kfc.person.api.dtos.PersonDto;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
