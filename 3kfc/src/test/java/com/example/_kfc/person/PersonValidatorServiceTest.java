@@ -1,14 +1,21 @@
-package com.example._kfc.person.entities;
+package com.example._kfc.person;
 
 import com.example._kfc.person.dtos.PersonDto;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class PeopleRecordTest {
+@ExtendWith(MockitoExtension.class)
+class PersonValidatorServiceTest {
+    @Mock
+    private PersonValidatorService personValidatorService;
+
     private final PersonDto Han = new PersonDto(5, "Han Solo", "1942-07-13",
             new PersonDto.RelatedPersonDto(1),
             new PersonDto.RelatedPersonDto(2),
@@ -37,45 +44,58 @@ class PeopleRecordTest {
 
     @Test
     void newPersonReturnsFalse() {
-        var record = new PeopleRecord();
+        var service = new PersonService(personValidatorService);
 
-        var actual = record.AddPerson(Han);
+        var actual = service.AddPerson(Han);
 
         assertFalse(actual);
     }
 
     @Test
     void newPersonWithPartnerButNoChildrenReturnsFalse() {
-        var record = new PeopleRecord();
+        var service = new PersonService(personValidatorService);
 
-        record.AddPerson(Han);
-        var actual = record.AddPerson(Leia);
+        service.AddPerson(Han);
+        var actual = service.AddPerson(Leia);
 
         assertFalse(actual);
     }
 
     @Test
     void newPersonWithPartnerButNoAdultChildrenReturnsFalse() {
-        var record = new PeopleRecord();
+        var service = new PersonService(personValidatorService);
 
-        record.AddPerson(Han);
-        record.AddPerson(Leia);
-        record.AddPerson(Ben);
-        record.AddPerson(Jacen);
-        var actual = record.AddPerson(Jaina);
+        service.AddPerson(Han);
+        service.AddPerson(Leia);
+        service.AddPerson(Ben);
+        service.AddPerson(Jacen);
+        var actual = service.AddPerson(Jaina);
 
         assertFalse(actual);
     }
 
     @Test
     void newPersonWithPartnerButWithAdultChildrenReturnsTrue() {
-        var record = new PeopleRecord();
+        var service = new PersonService(personValidatorService);
 
-        record.AddPerson(Han);
-        record.AddPerson(Leia);
-        record.AddPerson(Ben);
-        record.AddPerson(Jacen);
-        var actual = record.AddPerson(Jaina);
+        service.AddPerson(Han);
+        service.AddPerson(Leia);
+        service.AddPerson(Ben);
+        service.AddPerson(Jacen);
+        var actual = service.AddPerson(Jaina);
+
+        assertTrue(actual);
+    }
+
+    @Test
+    void orderOfInsertionShouldNotMatterAndStillReturnTrue() {
+        var service = new PersonService(personValidatorService);
+
+        service.AddPerson(Jaina);
+        service.AddPerson(Leia);
+        service.AddPerson(Ben);
+        service.AddPerson(Jacen);
+        var actual = service.AddPerson(Han);
 
         assertTrue(actual);
     }
