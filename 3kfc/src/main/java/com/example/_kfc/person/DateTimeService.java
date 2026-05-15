@@ -2,9 +2,11 @@ package com.example._kfc.person;
 
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class DateTimeService {
-    public String Now() {
-        return java.time.LocalDate.now().toString();
+    public LocalDate Now() {
+        return java.time.LocalDate.now();
     }
 }

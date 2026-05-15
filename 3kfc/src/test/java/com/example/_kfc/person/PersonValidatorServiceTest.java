@@ -7,10 +7,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PersonValidatorServiceTest {
@@ -32,17 +34,17 @@ class PersonValidatorServiceTest {
             5,
             6,
             null,
-            new HashSet<Integer>());
+            new HashSet<>());
     private final Person child2 = new Person(8, "Jacen Solo", "1967-01-21",
             5,
             6,
             null,
-            new HashSet<Integer>());
-    private final Person child3 = new Person(9, "Jaina Solo", "1968-01-21",
+            new HashSet<>());
+    private final Person child3 = new Person(9, "Jaina Solo", "2012-01-21",
             5,
             6,
             null,
-            new HashSet<Integer>());
+            new HashSet<>());
 
     @Test
     void personWithoutPartnerReturnsEmptyList() {
@@ -72,6 +74,23 @@ class PersonValidatorServiceTest {
     }
 
     @Test
+    void personWithTheChildrenButNoMinorsReturnsEmptyList() {
+        var record = new PeopleRecord();
+        record.AddPerson(child1);
+        record.AddPerson(child2);
+        record.AddPerson(child3);
+        record.AddPerson(new Person(parent2.id(), parent2.name(), parent2.birthDate(), 1, 2, parent1.id(), Set.of(child1.id(), child2.id(), child3.id())));
+        record.AddPerson(new Person(parent1.id(), "Han Solo", "2024-01-02", 1, 2, parent2.id(), Set.of(child1.id(), child2.id(), child3.id())));
+        var service = new PersonValidatorService(dateTimeService);
+
+        when(dateTimeService.Now()).thenReturn(LocalDate.of(2030, 1, 21));
+
+        var actual = service.GetValidPeople(record);
+
+        assertEquals(0, actual.size());
+    }
+
+    @Test
     void personWithThreeChildrenReturnsValidParents() {
         var record = new PeopleRecord();
         record.AddPerson(child1);
@@ -80,6 +99,8 @@ class PersonValidatorServiceTest {
         record.AddPerson(new Person(parent2.id(), parent2.name(), parent2.birthDate(), 1, 2, parent1.id(), Set.of(child1.id(), child2.id(), child3.id())));
         record.AddPerson(new Person(parent1.id(), "Han Solo", "2024-01-02", 1, 2, parent2.id(), Set.of(child1.id(), child2.id(), child3.id())));
         var service = new PersonValidatorService(dateTimeService);
+
+        when(dateTimeService.Now()).thenReturn(LocalDate.of(2030, 1, 1));
 
         var actual = service.GetValidPeople(record);
 
