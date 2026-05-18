@@ -4,12 +4,15 @@ import com.example._kfc.person.domain.PeopleRecord;
 import com.example._kfc.person.domain.Person;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class PersonValidatorService {
     private final DateTimeService dateTimeService;
+    private final Set<Long> validatedPeople = new HashSet<>();
 
     public PersonValidatorService(DateTimeService dateTimeService) {
         this.dateTimeService = dateTimeService;
@@ -21,11 +24,7 @@ public class PersonValidatorService {
      * @return Set of ids from people that fulfill the check
      */
     public Set<Person> GetValidPeople(PeopleRecord record) {
-        return record.GetPersons().stream()
-                .filter(this::hasPartner)
-                .filter(person -> hasThreeChildrenWithCorrectParents(person, record))
-                .filter(person -> hasNotOnlyMinorChildren(person, record))
-                .collect(Collectors.toSet());
+        return validatedPeople.stream().map(record::GetPerson).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
     /**
@@ -77,5 +76,33 @@ public class PersonValidatorService {
         if (date == null) return false;
         var eighteenYearsAgo = dateTimeService.Now().minusYears(18);
         return date.isAfter(eighteenYearsAgo);
+    }
+
+    public void removeValidatedFamily(Person person) {
+        validatedPeople.remove(person.getId());
+        if (person.getPartnerId() != null) validatedPeople.remove(person.getPartnerId());
+        person.getChildrenIds().forEach(validatedPeople::remove);
+        person.getParentIds().forEach(validatedPeople::remove);
+        validatedPeople.remove(person.getId());
+        validatedPeople.remove(person.getId());
+    }
+
+    public void updateValidatedPeople(Person person, PeopleRecord record) {
+        validatePerson(person.getId(), record);
+        validatePerson(person.getPartnerId(), record);
+        person.getChildrenIds().forEach(c -> validatePerson(c, record));
+        person.getParentIds().forEach(p -> validatePerson(p, record));
+    }
+
+    private void validatePerson(Long personId, PeopleRecord record) {
+        if (personId == null) return;
+        var person = record.GetPerson(personId);
+        if (person == null) return;
+
+        var isValid = hasPartner(person)
+                && hasThreeChildrenWithCorrectParents(person, record)
+                && hasNotOnlyMinorChildren(person, record);
+
+        if (isValid) validatedPeople.add(personId);
     }
 }

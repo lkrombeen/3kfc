@@ -73,7 +73,7 @@ class PersonValidatorServiceTest {
     }
 
     @Test
-    void personWithTheChildrenButNoMinorsReturnsEmptyList() {
+    void personWithThreeChildrenButNoMinorsReturnsEmptyList() {
         // Arrange
         var record = setupHappyLittleFamily();
         var service = new PersonValidatorService(dateTimeService);
@@ -81,6 +81,7 @@ class PersonValidatorServiceTest {
         when(dateTimeService.Now()).thenReturn(LocalDate.of(2030, 1, 21));
 
         // Act
+        service.updateValidatedPeople(parent1, record);
         var actual = service.GetValidPeople(record);
 
         // Assert
@@ -97,6 +98,7 @@ class PersonValidatorServiceTest {
         when(dateTimeService.Now()).thenReturn(LocalDate.of(2030, 1, 1));
 
         // Act
+        service.updateValidatedPeople(parent1, record);
         var actual = service.GetValidPeople(record);
 
         // Assert

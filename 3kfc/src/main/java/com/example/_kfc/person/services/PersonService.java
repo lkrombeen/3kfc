@@ -29,9 +29,14 @@ public final class PersonService {
     public PersonDto UpsertPerson(PersonDto dto) {
         var person = record.GetOrCreate(dto.id());
 
+        // TODO L refactor services so that PersonService does not need to know the entire flow steps
+        personValidatorService.removeValidatedFamily(person);
+
         record.RemoveExistingRelationsOf(person);
         setValuesFor(person, dto);
         record.AddRelationsOf(person);
+
+        personValidatorService.updateValidatedPeople(person, record);
 
         return personMapper.toDto(person);
     }
